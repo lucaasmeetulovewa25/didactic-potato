@@ -1,0 +1,42 @@
+[cerebrium.deployment]
+name = "jupyterlab"
+deployment_initialization_timeout = 7200
+python_version = "3.11"
+include = ["start.sh", "cerebrium.toml"]
+exclude = [".*"]
+
+[cerebrium.hardware]
+cpu = 4
+memory = 16.0
+compute = "ADA_L40"
+gpu_count = 1
+provider = "crusoe"
+region = "us-east-1"
+
+[cerebrium.scaling]
+compute_tier = "protected"
+min_replicas = 5          # 0 = mati saat idle (hemat biaya). Set 1 agar selalu hidup (tetap ditagih)
+max_replicas = 5          # satu instance saja, supaya satu sesi Jupyter
+cooldown = 10           # detik sebelum instance dimatikan setelah tidak ada request
+replica_concurrency = 888 # Jupyter mengirim banyak request paralel (API, static, websocket)
+
+[cerebrium.runtime.custom]
+port = 8888
+entrypoint = ["bash", "start.sh"]
+# healthcheck_endpoint tidak diisi -> Cerebrium memakai TCP ping ke port 8888
+
+[cerebrium.dependencies.apt]
+curl = "latest"
+wget = "latest"
+ocl-icd-opencl-dev = "latest"
+sudo = "latest"
+git = "latest"
+
+[cerebrium.dependencies.pip]
+jupyterlab = "latest"
+ipykernel = "latest"
+ipywidgets = "latest"
+torch = ">=2.0.0"
+numpy = "latest"
+pandas = "latest"
+matplotlib = "latest"
